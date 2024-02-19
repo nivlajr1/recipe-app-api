@@ -1,5 +1,5 @@
 """
-Test for recipe APIs.
+Tests for recipe APIs.
 """
 from decimal import Decimal
 
@@ -46,8 +46,7 @@ class PublicRecipeAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-
-class PrivateRecipeAPITests(TestCase):
+class PrivateRecipeApiTests(TestCase):
     """Test authenticated API requests."""
 
     def setUp(self):
@@ -58,7 +57,7 @@ class PrivateRecipeAPITests(TestCase):
         )
         self.client.force_authenticate(self.user)
 
-    def test_retrive_recipes(self):
+    def test_retrieve_recipes(self):
         """Test retrieving a list of recipes."""
         create_recipe(user=self.user)
         create_recipe(user=self.user)
@@ -71,7 +70,7 @@ class PrivateRecipeAPITests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_recipe_list_limited_to_user(self):
-        """Test list of recipes is limited to authenicated user."""
+        """Test list of recipes is limited to authenticated user."""
         other_user = get_user_model().objects.create_user(
             'other@example.com',
             'password123',

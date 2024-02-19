@@ -1,5 +1,5 @@
 """
-Testsfor the user API.
+Tests for the user API.
 """
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -28,9 +28,9 @@ class PublicUserApiTests(TestCase):
     def test_create_user_success(self):
         """Test creating a user is successful."""
         payload = {
-            'email':'test@example.com',
-            'password':'testpass123',
-            'name':'Test Name',
+            'email': 'test@example.com',
+            'password': 'testpass123',
+            'name': 'Test Name',
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
@@ -44,19 +44,19 @@ class PublicUserApiTests(TestCase):
         payload = {
             'email': 'test@example.com',
             'password': 'testpass123',
-            'name': 'Test Name'
+            'name': 'Test Name',
         }
         create_user(**payload)
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_passowrd_too_short_error(self):
-        """Test an error is returned if passowrd less than 5 chars."""
+    def test_password_too_short_error(self):
+        """Test an error is returned if password less than 5 chars."""
         payload = {
             'email': 'test@example.com',
             'password': 'pw',
-            'name': 'Test Name',
+            'name': 'Test name',
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
@@ -94,12 +94,20 @@ class PublicUserApiTests(TestCase):
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_token_blank_password(self):
-        """Test posting a blank password returns an error."""
-        payload = {'email': 'test@example.com', 'password':''}
+    def test_create_token_email_not_found(self):
+        """Test error returned if user not found for given email."""
+        payload = {'email': 'test@example.com', 'password': 'pass123'}
         res = self.client.post(TOKEN_URL, payload)
 
-        self.assertNotIn('token',res.data)
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_blank_password(self):
+        """Test posting a blank password returns an error."""
+        payload = {'email': 'test@example.com', 'password': ''}
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_retrieve_user_unauthorized(self):
@@ -125,8 +133,8 @@ class PrivateUserApiTests(TestCase):
         """Test retrieving profile for logged in user."""
         res = self.client.get(ME_URL)
 
-        self.assertEquals(res.status_code, status.HTTP_200_OK)
-        self.assertEquals(res.data,{
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {
             'name': self.user.name,
             'email': self.user.email,
         })
@@ -139,7 +147,7 @@ class PrivateUserApiTests(TestCase):
 
     def test_update_user_profile(self):
         """Test updating the user profile for the authenticated user."""
-        payload = {'name': 'Update name', 'password': 'newpassword123'}
+        payload = {'name': 'Updated name', 'password': 'newpassword123'}
 
         res = self.client.patch(ME_URL, payload)
 
