@@ -30,7 +30,7 @@ class PublicTagsApiTests(TestCase):
     """Test unauthenticated API requests."""
 
     def setUp(self):
-        self.client =APIClient()
+        self.client = APIClient()
 
     def test_auth_required(self):
         """Test auth is required for retrieving tags."""
@@ -39,7 +39,7 @@ class PublicTagsApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateTagsApiTest(TestCase):
+class PrivateTagsApiTests(TestCase):
     """Test authenticated API requests."""
 
     def setUp(self):
@@ -48,7 +48,7 @@ class PrivateTagsApiTest(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_retrieve_tags(self):
-        """Test retrieveing a list vof tags."""
+        """Test retrieving a list of tags."""
         Tag.objects.create(user=self.user, name='Vegan')
         Tag.objects.create(user=self.user, name='Dessert')
 
@@ -59,27 +59,27 @@ class PrivateTagsApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-def test_tags_limited_to_user(self):
-    """Test list of tags is limited to authenticated user."""
-    user2 = create_user(email='user2@example.com')
-    Tag.objects.create(user=user2, name='Fruity')
-    tag = Tag.objects.create(user=self.user, name='Comfort Food')
+    def test_tags_limited_to_user(self):
+        """Test list of tags is limited to authenticated user."""
+        user2 = create_user(email='user2@example.com')
+        Tag.objects.create(user=user2, name='Fruity')
+        tag = Tag.objects.create(user=self.user, name='Comfort Food')
 
-    res = self.client.get(TAGS_URL)
+        res = self.client.get(TAGS_URL)
 
-    self.assertEqual(res.status_code, status.HTTP_200_OK)
-    self.assertEqual(len(res.data), 1)
-    self.assertEqual(res.data[0]['name'], tag.name)
-    self.assertEqual(res.data[0]['id'], tag.id)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]['name'], tag.name)
+        self.assertEqual(res.data[0]['id'], tag.id)
 
-def test_update_tag(self):
-    """Test updating a tag."""
-    tag = Tag.objects.create(user=self.user, name='After Dinner')
+    def test_update_tag(self):
+        """Test updating a tag."""
+        tag = Tag.objects.create(user=self.user, name='After Dinner')
 
-    payload = {'name': 'Dessert'}
-    url = detail_url(tag.id)
-    res = self.client.patch(url. payload)
+        payload = {'name': 'Dessert'}
+        url = detail_url(tag.id)
+        res = self.client.patch(url, payload)
 
-    self.assertEqual(res.status_code, status.HTTP_200_OK)
-    tag.refresh_from_db()
-    self.assertEqual(tag.name, payload['name'])
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        tag.refresh_from_db()
+        self.assertEqual(tag.name, payload['name'])

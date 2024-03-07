@@ -6,7 +6,7 @@ from rest_framework import serializers
 from core.models import (
     Recipe,
     Tag,
-    )
+)
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -26,9 +26,9 @@ class RecipeDetailSerializer(RecipeSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """Serialzer for tags."""
+    """Serializer for tags."""
 
     class Meta:
         model = Tag
-        fields =['id','name']
+        fields = ['id', 'name']
         read_only_fields = ['id']
