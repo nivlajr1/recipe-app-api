@@ -16,6 +16,10 @@ from recipe.serializers import IngredientSerializer
 INGREDIENTS_URL = reverse('recipe:ingredient-list')
 
 
+def detail_url(ingredient_id):
+    """Create and return an ingredient detail url."""
+    return reverse('recipe:ingredient-list', args=[ingredient_id])
+
 def create_user(email='user@example.com', password='testpass123'):
     """Create and return user."""
     return get_user_model().objects.create_user(email=email, password=password)
@@ -24,7 +28,7 @@ def create_user(email='user@example.com', password='testpass123'):
 class PublicIngredientsApiTests(TestCase):
     """Test unauthenticated API requests."""
 
-    def setUP(self):
+    def setUp(self):
         self.client = APIClient()
 
     def test_auth_required(self):
@@ -34,15 +38,15 @@ class PublicIngredientsApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateIngredientApiTests(TestCase):
-    """Test Unauthenticated API request."""
+class PrivateIngredientsApiTests(TestCase):
+    """Test authenticated API requests."""
 
     def setUp(self):
         self.user = create_user()
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
-    def test_retrieve_ingredient(self):
+    def test_retrieve_ingredients(self):
         """Test retrieving a list of ingredients."""
         Ingredient.objects.create(user=self.user, name='Kale')
         Ingredient.objects.create(user=self.user, name='Vanilla')
@@ -56,13 +60,26 @@ class PrivateIngredientApiTests(TestCase):
 
     def test_ingredients_limited_to_user(self):
         """Test list of ingredients is limited to authenticated user."""
-        user2 = create_user('user2@example.com')
+        user2 = create_user(email='user2@example.com')
         Ingredient.objects.create(user=user2, name='Salt')
-        Ingredient = Ingredient.objects.create(user=self.user, name='Pepper')
+        ingredient = Ingredient.objects.create(user=self.user, name='Pepper')
 
         res = self.client.get(INGREDIENTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEquel(len(res.data), 1)
+        self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['name'], ingredient.name)
         self.assertEqual(res.data[0]['id'], ingredient.id)
+
+    def test_update_ingredient(self):
+        """Test updating an ingredient."""
+        ingredient = Ingredient.objects.create(user=self.user, name='Cilantro')
+
+        payload = {'name':'Coriander'}
+        url = detail_url(ingredient.id)
+        res =self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        ingredient.refresh_from_db()
+        self.assertEqual(ingredient.name, payload['name'])
+
