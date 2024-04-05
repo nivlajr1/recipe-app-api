@@ -272,7 +272,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe.tags.add(tag_breakfast)
 
         tag_lunch = Tag.objects.create(user=self.user, name='Lunch')
-        payload = {'tags':[{'name': 'Lunch'}]}
+        payload = {'tags': [{'name': 'Lunch'}]}
         url = detail_url(recipe.id)
         res = self.client.patch(url, payload, format='json')
 
@@ -287,7 +287,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe.tags.add(tag)
 
         payload = {'tags': []}
-        url =detail_url(recipe.id)
+        url = detail_url(recipe.id)
         res = self.client.patch(url, payload, format='json')
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -299,7 +299,7 @@ class PrivateRecipeApiTests(TestCase):
             'title': 'Cauliflower Tacos',
             'time_minutes': 60,
             'price': Decimal('4.30'),
-            'ingredients': [{'name': 'Cauliflower'}, {'name': 'salt'}],
+            'ingredients': [{'name': 'Cauliflower'}, {'name': 'Salt'}],
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
 
@@ -430,7 +430,7 @@ class ImageUploadTests(TestCase):
             'password123',
         )
         self.client.force_authenticate(self.user)
-        self.recipe =create_recipe(user=self.user)
+        self.recipe = create_recipe(user=self.user)
 
     def tearDown(self):
         self.recipe.image.delete()

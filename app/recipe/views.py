@@ -98,9 +98,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     list=extend_schema(
         parameters=[
             OpenApiParameter(
+                'assigned_only',
                 OpenApiTypes.INT, enum=[0, 1],
-                description='Filer by items assigned to recipes.',
-            )
+                description='Filter by items assigned to recipes.',
+            ),
         ]
     )
 )
@@ -119,7 +120,7 @@ class BaseRecipeAttrViewSet(mixins.DestroyModelMixin,
         )
         queryset = self.queryset
         if assigned_only:
-            queryset= queryset.filter(recipe__isnull=False)
+            queryset = queryset.filter(recipe__isnull=False)
 
         return queryset.filter(
             user=self.request.user
