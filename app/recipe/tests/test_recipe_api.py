@@ -254,7 +254,7 @@ class PrivateRecipeApiTests(TestCase):
             self.assertTrue(exists)
 
     def test_create_tag_on_update(self):
-        """Test creating tag with updating a recipe."""
+        """Test create tag when updating a recipe."""
         recipe = create_recipe(user=self.user)
 
         payload = {'tags': [{'name': 'Lunch'}]}
@@ -294,7 +294,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(recipe.tags.count(), 0)
 
     def test_create_recipe_with_new_ingredients(self):
-        """Test creating a recipe with new ingrdients."""
+        """Test creating a recipe with new ingredients."""
         payload = {
             'title': 'Cauliflower Tacos',
             'time_minutes': 60,
@@ -316,7 +316,7 @@ class PrivateRecipeApiTests(TestCase):
             self.assertTrue(exists)
 
     def test_create_recipe_with_existing_ingredient(self):
-        """Test creating a recipe with existing ingredient."""
+        """Test creating a new recipe with existing ingredient."""
         ingredient = Ingredient.objects.create(user=self.user, name='Lemon')
         payload = {
             'title': 'Vietnamese Soup',
@@ -381,7 +381,7 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_filter_by_tags(self):
         """Test filtering recipes by tags."""
-        r1 = create_recipe(user=self.user, title='Thai vegetable Curry')
+        r1 = create_recipe(user=self.user, title='Thai Vegetable Curry')
         r2 = create_recipe(user=self.user, title='Aubergine with Tahini')
         tag1 = Tag.objects.create(user=self.user, name='Vegan')
         tag2 = Tag.objects.create(user=self.user, name='Vegetarian')
@@ -409,7 +409,7 @@ class PrivateRecipeApiTests(TestCase):
         r2.ingredients.add(in2)
         r3 = create_recipe(user=self.user, title='Red Lentil Daal')
 
-        params = {'ingredients': f'{in1.id}, {in2.id}'}
+        params = {'ingredients': f'{in1.id},{in2.id}'}
         res = self.client.get(RECIPES_URL, params)
 
         s1 = RecipeSerializer(r1)
@@ -420,7 +420,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertNotIn(s3.data, res.data)
 
 
-class ImageUploadTest(TestCase):
+class ImageUploadTests(TestCase):
     """Tests for the image upload API."""
 
     def setUp(self):
@@ -445,13 +445,13 @@ class ImageUploadTest(TestCase):
             payload = {'image': image_file}
             res = self.client.post(url, payload, format='multipart')
 
-            self.recipe.refresh_from_db()
-            self.assertEqual(res.status_code, status.HTTP_200_OK)
-            self.assertIn('image', res.data)
-            self.assertTrue(os.path.exists(self.recipe.image.path))
+        self.recipe.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('image', res.data)
+        self.assertTrue(os.path.exists(self.recipe.image.path))
 
     def test_upload_image_bad_request(self):
-        """Test uploading invalid image."""
+        """Test uploading an invalid image."""
         url = image_upload_url(self.recipe.id)
         payload = {'image': 'notanimage'}
         res = self.client.post(url, payload, format='multipart')
