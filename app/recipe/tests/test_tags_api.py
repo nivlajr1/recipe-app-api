@@ -100,7 +100,7 @@ class PrivateTagsApiTests(TestCase):
         tags = Tag.objects.filter(user=self.user)
         self.assertFalse(tags.exists())
 
-    def test_filer_tags_assigned_to_recipes(self):
+    def test_filter_tags_assigned_to_recipes(self):
         """Test listing tags to those assigned to recipes."""
         tag1 = Tag.objects.create(user=self.user, name='Breakfast')
         tag2 = Tag.objects.create(user=self.user, name='Lunch')
@@ -119,8 +119,8 @@ class PrivateTagsApiTests(TestCase):
         self.assertIn(s1.data, res.data)
         self.assertNotIn(s2.data, res.data)
 
-    def test_filter_tags_unique(self):
-        """Test filter tags return unique list."""
+    def test_filtered_tags_unique(self):
+        """Test filtered tags returns a unique list."""
         tag = Tag.objects.create(user=self.user, name='Breakfast')
         Tag.objects.create(user=self.user, name='Dinner')
         recipe1 = Recipe.objects.create(
