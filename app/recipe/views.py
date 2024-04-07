@@ -7,6 +7,7 @@ from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiTypes,
 )
+
 from rest_framework import (
     viewsets,
     mixins,
